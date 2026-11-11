@@ -44,7 +44,7 @@ export const TOGGLE_DOMAINS = ["light", "switch", "fan"];
 
 export const CLIMATE_DOMAINS = ["climate"];
 
-export const OTHER_DOMAINS = ["vacuum", "media_player", "lock"];
+export const OTHER_DOMAINS = ["vacuum", "media_player", "lock", "humidifier"];
 
 export const DEVICE_CLASSES = {
     sensor: ["temperature", "humidity"],
@@ -79,12 +79,14 @@ export const DOMAIN_STATE_ICONS = {
     vacuum: { on: "mdi:robot-vacuum" },
     media_player: { on: "mdi:cast-connected" },
     lock: { on: "mdi:lock-open" },
-    climate: { on: "mdi:thermostat"},
+    climate: { on: "mdi:thermostat", off: "mdi:thermostat" },
+    humidifier: { on: "mdi:air-humidifier", off: "mdi:air-humidifier" },
   };
 
   export const DOMAIN_ICONS = {
     light: "mdi:lightbulb",
     climate: "mdi:thermostat",
+    humidifier: "mdi:air-humidifier",
     switch: "mdi:power-plug",
     fan: "mdi:fan",
     sensor: "mdi:eye",
