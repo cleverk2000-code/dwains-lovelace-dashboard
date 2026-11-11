@@ -422,24 +422,11 @@ class DwainsHouseInformationCard extends LitElement {
     }
 
     _isOnClimate(entities, domain) {
-        if (!entities) {
-            return undefined;
-        }
-        const climateStates = [];
-        for (const climate of entities) {
-            if (climate.attributes['hvac_action'] && climate.attributes['hvac_action'] != 'idle') {
-                if (!UNAVAILABLE_STATES.includes(climate.attributes['hvac_action']) && !STATES_OFF.includes(climate.attributes['hvac_action'])) {
-                    climateStates.push(climate.entity_id);
-                }
-            } else if (!climate.attributes['hvac_action']) {
-                if (!UNAVAILABLE_STATES.includes(climate.state) && !STATES_OFF.includes(climate.state)) {
-                    climateStates.push(climate.entity_id);
-                }
-            }
-        }
-        return climateStates.length;
+        if (!entities) return undefined;
+        return entities.filter((climate) =>
+            !UNAVAILABLE_STATES.includes(climate.state) && climate.state !== 'off'
+        ).length;
     }
-
 
     _renderDomain(domain) {
         const entitiesByDomain = [];
