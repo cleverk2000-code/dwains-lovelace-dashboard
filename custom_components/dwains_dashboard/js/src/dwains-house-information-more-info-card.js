@@ -256,7 +256,8 @@ class DwainsHouseInformationMoreInfoCard extends LitElement {
                 // Check voor deviceClass overeenkomst als deviceClass is opgegeven
                 const deviceClassMatches = !this.deviceClass || (stateObj.attributes.device_class === this.deviceClass);
 
-                if (isOn && deviceClassMatches) {
+                if ((isOn || ((this.domain === 'climate' || this.domain === 'humidifier')
+                    && !UNAVAILABLE_STATES.includes(stateObj.state))) && deviceClassMatches) {
                     const card = await this.createEntityCard(entityConfig.entity_id, entityConfig.friendlyName);
                     if (card) {
                         const areaId = entityConfig.area.area_id || 'default';
