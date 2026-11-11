@@ -177,6 +177,7 @@ const translations = {
             cover: 'Cover',
             light: 'Light',
             climate: 'Climate',
+            humidifier: 'Humidifier',
             sensor: 'Sensor',
             binary_sensor: 'Binary Sensor',
             media_player: 'Media player',
@@ -1862,6 +1863,7 @@ const translations = {
             instruction: '在 Dwains Dashboard Community Blueprints Github 中查找要安装的蓝图，并将蓝图 YAML 代码粘贴到下面。安装成功后，Lovelace 和此页面将重新加载。然后，您可以使用已安装的蓝图。',
         },
     },
+    ko: { device: { climate: '난방', humidifier: '가습기' } },
   };
   
   export default translations;
