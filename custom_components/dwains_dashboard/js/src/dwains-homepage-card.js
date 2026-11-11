@@ -1065,6 +1065,42 @@ function getDwainsHass() {
       moreInfo(ev.currentTarget.entity);
     }
 
+    _roomDeviceActive(entity, domain) {
+      if (!entity || UNAVAILABLE_STATES.includes(entity.state)) return false;
+      if (domain === 'climate') return entity.state !== 'off';
+      return entity.state === 'on' || entity.state === 'humidifying';
+    }
+
+    _handleAreaDeviceMoreInfo(ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      if (ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+      const { areaId, domain } = ev.currentTarget.dataset;
+      const data = this.data.find((item) => item.area.area_id === areaId);
+      if (!data) return;
+      const stateEntities = this._entitiesByDomain(data.entities)[domain] || [];
+      if (!stateEntities.length) return;
+      if (stateEntities.length === 1) {
+        moreInfo(stateEntities[0].entity_id);
+        return;
+      }
+      const entities = stateEntities.map((state) => ({
+        entity_id: state.entity_id,
+        area: data.area,
+        friendlyName: this._entityDisplayName(state.entity_id),
+      }));
+      const title = domain === 'climate' ? '난방' : '가습기';
+      this._popupOpens.schedule(() => {
+        popUp(title, {
+          type: 'custom:dwains-house-information-more-info-card',
+          domain,
+          entities,
+          deviceClass: '',
+          configuration: this.configuration,
+        }, true, '');
+      });
+    }
+
     _entitiesByDomain(entities){
       return groupEntityStatesByDomain(entities, {
         states: this._hass.states,
@@ -1796,6 +1832,33 @@ function getDwainsHass() {
                     : "";
                 }
               })}
+              ${['climate', 'humidifier'].map((domain) => {
+                const entities = entitiesByDomain[domain];
+                if (!entities || !entities.length) return '';
+                const active = entities.some((entity) => this._roomDeviceActive(entity, domain));
+                const color = active
+                  ? (domain === 'climate' ? '#facc15' : 'var(--primary-color, #38bdf8)')
+                  : 'var(--secondary-text-color, #9ca3af)';
+                const title = domain === 'climate' ? '난방' : '가습기';
+                return html`
+                  <span
+                    class="info-badge room-device-badge inline-flex items-center px-1 py-0.5 rounded text-xs font-medium"
+                    data-area-id=${data.area.area_id}
+                    data-domain=${domain}
+                    title=${title}
+                    role="button"
+                    tabindex="0"
+                    @click=${this._handleAreaDeviceMoreInfo}
+                    @keydown=${(ev) => {
+                      if (ev.key === 'Enter' || ev.key === ' ') this._handleAreaDeviceMoreInfo(ev);
+                    }}
+                  >
+                    <ha-icon class="w-6 h-6" style=${`color: ${color};`}
+                      .icon=${DOMAIN_STATE_ICONS[domain][active ? 'on' : 'off']}>
+                    </ha-icon>
+                  </span><br>
+                `;
+              })}
               ${ALERT_DOMAINS.map((domain) => {
                 if (!(domain in entitiesByDomain)) {
                   return "";
@@ -1839,6 +1902,7 @@ function getDwainsHass() {
                 });
               })}
               ${OTHER_DOMAINS.map((domain) => {
+                if (domain === 'humidifier') return '';
                 if (!(domain in entitiesByDomain)) {
                   return "";
                 }
@@ -2868,7 +2932,8 @@ function getDwainsHass() {
           color: var( --dwains-info-badge-color, var(--primary-text-color) );
           background-color: var(--dwains-info-badge-background, var(--secondary-background-color));
         }
-        .area-button .info .toggle-badge {
+        .area-button .info .toggle-badge,
+        .area-button .info .room-device-badge {
           cursor: pointer;
           pointer-events: auto;
         }
