@@ -2515,6 +2515,12 @@ console.info("[Dwains Dashboard] Korean locale force enabled (v5)");
         ha-select, select, ha-input, ha-formfield {
           width: 100%;
         }
+        ha-formfield {
+          display: flex;
+          align-items: center;
+          gap: .5rem;
+          margin: .75rem 0;
+        }
         select {
           min-height: 56px;
           padding: 0 40px 0 14px;
@@ -2579,41 +2585,47 @@ console.info("[Dwains Dashboard] Korean locale force enabled (v5)");
               </select>
             </div>
 
-            <ha-formfield label=${(0,o.A)(this.hass,"entity.disable")}>
+            <ha-formfield>
               <ha-checkbox
                 @change=${this._disableValueChanged}
                 .checked=${this.disableEntity}
               ></ha-checkbox>
+              <span slot="label">${(0,o.A)(this.hass,"entity.disable")}</span>
             </ha-formfield>
-            <ha-formfield label=${(0,o.A)(this.hass,"entity.hide")}>
+            <ha-formfield>
               <ha-checkbox
                 @change=${this._hideValueChanged}
                 .checked=${this.hideEntity}
               ></ha-checkbox>
+              <span slot="label">${(0,o.A)(this.hass,"entity.hide")}</span>
             </ha-formfield>
-            <ha-formfield label=${(0,o.A)(this.hass,"entity.hide_in_area")}>
+            <ha-formfield>
               <ha-checkbox
                 @change=${this._hideInAreaValueChanged}
                 .checked=${this.hideEntityInArea}
               ></ha-checkbox>
+              <span slot="label">${(0,o.A)(this.hass,"entity.hide_in_area")}</span>
             </ha-formfield>
-            <ha-formfield label=${(0,o.A)(this.hass,"entity.exclude")}>
+            <ha-formfield>
               <ha-checkbox
                 @change=${this._excludeValueChanged}
                 .checked=${this.excludeEntity}
               ></ha-checkbox>
+              <span slot="label">${(0,o.A)(this.hass,"entity.exclude")}</span>
             </ha-formfield>
-            <ha-formfield label=${(0,o.A)(this.hass,"entity.use_entity_card")}>
+            <ha-formfield>
               <ha-checkbox
                 @change=${this._customCardValueChanged}
                 .checked=${this.customCard}
               ></ha-checkbox>
+              <span slot="label">${(0,o.A)(this.hass,"entity.use_entity_card")}</span>
             </ha-formfield>
-            <ha-formfield label=${(0,o.A)(this.hass,"entity.use_popup_card")}>
+            <ha-formfield>
               <ha-checkbox
                 @change=${this._customPopupValueChanged}
                 .checked=${this.customPopup}
               ></ha-checkbox>
+              <span slot="label">${(0,o.A)(this.hass,"entity.use_popup_card")}</span>
             </ha-formfield>
 
             <div class="card-footer">
