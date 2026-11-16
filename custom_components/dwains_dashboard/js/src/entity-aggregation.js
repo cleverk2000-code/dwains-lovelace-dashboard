@@ -62,20 +62,26 @@ function localizedClimateState(
   const labels = [];
 
   for (const climate of entities) {
+    if (unavailableStates.includes(climate.state)) continue;
+
     const action = climate.attributes.hvac_action;
     const temperature = climate.attributes.temperature;
-    const target = temperature
+    const hasTarget = temperature !== null
+      && temperature !== undefined
+      && temperature !== ""
+      && Number.isFinite(Number(temperature));
+    const target = hasTarget
       ? ` (${temperature}${hass.config.unit_system.temperature})`
       : "";
+
+    // Always show the target temperature, even when HVAC is idle or off.
+    let status = "";
     if (action && action !== "idle") {
-      labels.push(hass.localize(`state_attributes.climate.hvac_action.${action}`) + target);
-    } else if (
-      !action
-      && !unavailableStates.includes(climate.state)
-      && !statesOff.includes(climate.state)
-    ) {
-      labels.push(hass.localize(`component.climate.state._.${climate.state}`) + target);
+      status = hass.localize(`state_attributes.climate.hvac_action.${action}`) || "";
+    } else if (!action && !statesOff.includes(climate.state)) {
+      status = hass.localize(`component.climate.state._.${climate.state}`) || "";
     }
+    if (status || target) labels.push(status + target);
   }
   return labels.join(", ");
 }
