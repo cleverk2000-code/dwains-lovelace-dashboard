@@ -680,6 +680,10 @@ function getDwainsHass() {
                 const entityConfig = this.configuration['entities']?.[entity.entity_id];
                 if (isEntityHiddenInArea(entityConfig)) {
                   areaEntitiesHidden.push(entity.entity_id);
+                  // Only hide the room content card; retain its room overview status.
+                  if (!entityConfig?.disabled && !entityConfig?.excluded && this._hass.states[entity.entity_id]) {
+                    areaEntities.add(entity.entity_id);
+                  }
                   continue;
                 }
                 const disableEntity = this.configuration['entities'][entity.entity_id] ? (this.configuration['entities'][entity.entity_id]['disabled'] ? true : false) : false;

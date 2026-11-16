@@ -93,7 +93,6 @@ function groupEntityStatesByDomain(entityIds, {
   for (const entityId of entityIds) {
     if (
       excludedEntities[entityId]?.excluded
-      || excludedEntities[entityId]?.hidden_in_area
     ) continue;
     const separator = entityId.indexOf(".");
     if (separator === -1) continue;

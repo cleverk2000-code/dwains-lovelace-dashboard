@@ -26,7 +26,6 @@ const { TimerOwner } = require('./timer-owner');
 const { PopupOpenScheduler } = require('./popup-open-scheduler');
 const { ReloadableLoadOwner } = require('./reloadable-load-owner');
 const { hassConnectionIdentity, hasHassConnectionChanged } = require('./hass-connection');
-const { isEntityHiddenInArea } = require('./entity-aggregation');
 //Herschreven
 class DwainsHouseInformationCard extends LitElement {
     constructor() {
@@ -290,11 +289,8 @@ class DwainsHouseInformationCard extends LitElement {
                             const disableEntity = this.configuration['entities'][entity.entity_id] ? (this.configuration['entities'][entity.entity_id]['disabled'] ? true : false) : false;
                             const excludeEntity = this.configuration['entities'][entity.entity_id] ? (this.configuration['entities'][entity.entity_id]['excluded'] ? true : false) : false;
                             const hideEntity = this.configuration['entities'][entity.entity_id] ? (this.configuration['entities'][entity.entity_id]['hidden'] ? true : false) : false;
-                            const hideEntityInArea = isEntityHiddenInArea(
-                                this.configuration['entities']?.[entity.entity_id],
-                            );
 
-                            if (!disableEntity && !excludeEntity && !hideEntity && !hideEntityInArea) {
+                            if (!disableEntity && !excludeEntity && !hideEntity) {
                                 const friendlyName = this._entityDisplayName(entity.entity_id, entity);
                                 const domain = computeDomain(entity.entity_id);
 
@@ -336,12 +332,7 @@ class DwainsHouseInformationCard extends LitElement {
             const configured = this.domains?.[domain]?.entities;
             const entities = domain === 'climate' && (!configured || configured.length === 0)
                 ? Object.keys(this._hass.states)
-                    .filter((entityId) =>
-                        entityId.startsWith('climate.')
-                        && !isEntityHiddenInArea(
-                            this.configuration?.entities?.[entityId],
-                        )
-                    )
+                    .filter((entityId) => entityId.startsWith('climate.'))
                     .map((entityId) => ({
                         entity_id: entityId,
                         area: {},
@@ -375,7 +366,7 @@ class DwainsHouseInformationCard extends LitElement {
             (entity) => {
                 const config = this.configuration?.entities?.[entity.entity_id];
                 return !entity.hidden_by &&
-                    !(config?.disabled || config?.excluded || config?.hidden || config?.hidden_in_area) &&
+                    !(config?.disabled || config?.excluded || config?.hidden) &&
                     !UNAVAILABLE_STATES.includes(entity.state) &&
                     !STATES_OFF.includes(entity.state);
             }
