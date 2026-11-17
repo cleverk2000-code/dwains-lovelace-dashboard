@@ -1767,10 +1767,17 @@ function getDwainsHass() {
       // Room motion mini badge: use the live HA binary_sensor state independently
       // of the room entity cards. Explicitly include the BESTIN hallway sensor
       // even when it is hidden in the area or has no device_class metadata.
-      const ddMotionEntities = this._areaEntityIdsForArea(data.area.area_id)
+      // The room registry may contain hidden entities, so do not use the
+      // filtered _areaEntityIdsForArea list here. Include off sensors too.
+      const ddMotionIds = new Set([
+        ...(this.entitiesByAreaId?.get(data.area.area_id) || []).map((entry) => entry.entity_id),
+        ...(data.entities || []),
+      ]);
+      const ddMotionEntities = [...ddMotionIds]
         .map((entityId) => this._hass.states[entityId])
         .filter((entity) => entity?.entity_id?.startsWith('binary_sensor.')
-          && ['motion', 'occupancy', 'presence', 'moving'].includes(entity.attributes?.device_class));
+          && (['motion', 'occupancy', 'presence', 'moving'].includes(entity.attributes?.device_class)
+            || /(motion|occupancy|presence|jaesil|dongche)/i.test(entity.entity_id)));
       const ddIsHallway = data.area.name?.trim() === '복도' || data.area.area_id === 'bogdo';
       const ddHallMotion = this._hass.states['binary_sensor.bogdo_bogdomosyeonsenseo_motion'];
       if (ddIsHallway && ddHallMotion && !ddMotionEntities.some((entity) => entity.entity_id === ddHallMotion.entity_id)) {
@@ -1890,6 +1897,9 @@ function getDwainsHass() {
                   return "";
                 }
                 return DEVICE_CLASSES[domain].map((deviceClass) => {
+                  // The motion/presence badge above is always visible and has no
+                  // number. Do not duplicate it as the old on-only count badge.
+                  if (['motion', 'occupancy', 'presence', 'moving'].includes(deviceClass)) return '';
                   const isOn = this._isOn(entitiesByDomain, domain, deviceClass);
                   if(isOn){
                     return html`
