@@ -1,3 +1,15 @@
+# 개인용 Dwains Dashboard 3.x 포크
+
+원본 Dwains Dashboard 3.10.1에 난방 설정온도, 난방·가습기 작은 아이콘, 한글화, 재실·모션 상태 아이콘, 숨김과 상태 집계 분리 기능을 추가했습니다. Dwains Dashboard Next와는 별도 저장소입니다.
+
+[원본 대비 상세 차이점](FORK_CHANGES.md) · [향후 업데이트/병합 가이드](UPSTREAM_UPDATE.md)
+
+업데이트 전 검사: node scripts/fork-check.cjs verify
+
+주의: 실제 HA에 설치되는 파일은 custom_components/dwains_dashboard/js/dwains-dashboard.js 입니다. 이 배포 JS에는 전체 한국어 번역 등 별도 수정이 포함됩니다.
+
+---
+
 # dwains-lovelace-dashboard
 
 ## Important Announcement

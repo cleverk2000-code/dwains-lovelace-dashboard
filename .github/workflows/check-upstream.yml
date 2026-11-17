@@ -1,0 +1,27 @@
+name: Monitor original DD3 updates
+on:
+  schedule:
+    - cron: "10 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: "3.0"
+          fetch-depth: 0
+      - name: Count new upstream commits
+        shell: bash
+        run: |
+          git remote add upstream https://github.com/dwainscheeren/dwains-lovelace-dashboard.git
+          git fetch upstream 3.0
+          pending=$(git rev-list --count HEAD..upstream/3.0)
+          echo "Unmerged upstream commits: $pending" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$pending" -gt 0 ]; then
+            echo "::warning::Original Dwains has $pending new commits. Read UPSTREAM_UPDATE.md."
+          fi
