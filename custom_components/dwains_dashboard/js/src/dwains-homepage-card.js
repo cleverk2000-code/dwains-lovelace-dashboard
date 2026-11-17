@@ -1764,6 +1764,20 @@ function getDwainsHass() {
       });
       sensors.push(...this._areaBinarySensorValues(data.area));
 
+      // Room motion mini badge: use the live HA binary_sensor state independently
+      // of the room entity cards. Explicitly include the BESTIN hallway sensor
+      // even when it is hidden in the area or has no device_class metadata.
+      const ddMotionEntities = this._areaEntityIdsForArea(data.area.area_id)
+        .map((entityId) => this._hass.states[entityId])
+        .filter((entity) => entity?.entity_id?.startsWith('binary_sensor.')
+          && ['motion', 'occupancy', 'presence', 'moving'].includes(entity.attributes?.device_class));
+      const ddIsHallway = data.area.name?.trim() === '복도' || data.area.area_id === 'bogdo';
+      const ddHallMotion = this._hass.states['binary_sensor.bogdo_bogdomosyeonsenseo_motion'];
+      if (ddIsHallway && ddHallMotion && !ddMotionEntities.some((entity) => entity.entity_id === ddHallMotion.entity_id)) {
+        ddMotionEntities.push(ddHallMotion);
+      }
+      const ddMotionActive = ddMotionEntities.some((entity) => entity.state === 'on');
+
       const configuredArea = this.configuration['areas']
         ? this.configuration['areas'][data.area.area_id]
         : undefined;
@@ -1810,6 +1824,14 @@ function getDwainsHass() {
               </div>
             </div>
             <div class="row-span-2 text-right space-y-0.5 info">
+              ${ddMotionEntities.length ? html`
+                <span class="info-badge room-motion-badge inline-flex items-center px-1 py-0.5 rounded text-xs font-medium"
+                  title=${ddMotionActive ? '모션 감지' : '모션 미감지'}>
+                  <ha-icon class="w-6 h-6"
+                    style=${`color: ${ddMotionActive ? '#22c55e' : '#808080'};`}
+                    .icon=${'mdi:motion-sensor'}></ha-icon>
+                </span><br>
+              ` : ''}
               ${TOGGLE_DOMAINS.map((domain) => {
                 if (!(domain in entitiesByDomain)) {
                   return "";
