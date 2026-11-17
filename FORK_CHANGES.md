@@ -8,7 +8,8 @@
 | 난방 설정온도 | climate가 heat/idle/off 상태여도 attributes.temperature가 유효하면 (23.5°C)처럼 표시 | js/src/entity-aggregation.js, 배포용 JS |
 | 난방/가습기 아이콘 | 방 카드 오른쪽의 mdi:thermostat 및 mdi:air-humidifier, 상태별 색상, 클릭 시 상세 보기 | js/src/dwains-homepage-card.js, variables.js, 배포용 JS |
 | 한글화 | 전체 한국어 번역표와 한국어 강제 적용은 배포용 JS에 포함. translations.js에는 일부 보조 번역 | **js/dwains-dashboard.js**, js/src/translations.js |
-| 재실/모션 | motion/occupancy/presence/moving 센서는 감지(on) 초록 #22c55e, 미감지(off) 회색 #808080 아이콘. **숫자 없음** | js/src/dwains-homepage-card.js, 배포용 JS |
+| 재실/모션 | motion/occupancy/presence/moving 센서는 감지(on) 초록 #22c55e, 미감지(off) 회색 #A3A7AD 아이콘. **숫자 없음** | js/src/dwains-homepage-card.js, 배포용 JS |
+| 작은 아이콘 크기·정렬 | 재실 그림만 기존 난방 아이콘의 24px 타일 안에서 0.83배로 축소. 숫자가 붙는 조명·스위치·팬 등 기존 아이콘 24px는 변경하지 않음. 재실 아이콘은 가장 아래. 재실 OFF와 난방 OFF 색상은 #A3A7AD로 통일 | js/src/dwains-homepage-card.js, 배포용 JS |
 | 미재실시 표시 | 센서가 속한 방이면 off에서도 작은 아이콘 유지. 기존 on 전용 회색/숫자 배지는 제거 | js/src/dwains-homepage-card.js, 배포용 JS |
 | 복도 센서 | binary_sensor.bogdo_bogdomosyeonsenseo_motion 직접 매핑. 해당 복도 카드에서 영역/hidden 여부와 무관하게 상태 인식 | js/src/dwains-homepage-card.js, 배포용 JS |
 | 숨김과 집계 분리 | Hide in area로 방 안 카드를 숨겨도 상단 및 방별 상태 집계 유지 | js/src/dwains-homepage-card.js, entity-aggregation.js, dwains-house-information-card.js, 배포용 JS |

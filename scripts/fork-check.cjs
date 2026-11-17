@@ -32,7 +32,10 @@ const tests = [
   ['motion on-off badge source', src('dwains-homepage-card.js'), /room-motion-badge/],
   ['motion on-off badge deploy', bundle, /room-motion-badge/],
   ['motion registry inclusion', src('dwains-homepage-card.js'), /ddMotionIds/],
-  ['motion state colors', bundle, /ddMotionActive\?"#22c55e":"#808080"/],
+  ['motion state colors', bundle, /ddMotionActive\?"#22c55e":"#A3A7AD"/],
+  ['motion visual scaled inside existing 24px tile', bundle, /transform: scale\(0\.83\)/],
+  ['presence badge placed after other domains', bundle, /\$\{d\.R9\.map[\s\S]*\$\{ddMotionEntities\.length\?n\.qy/],
+  ['heating off gray matches presence off', bundle, /:#A3A7AD/],
   ['no numeric legacy motion badge', bundle, /if\(\["motion","occupancy","presence","moving"\]\.includes\(i\)\)return""/],
   ['hallway motion entity', bundle, /binary_sensor\.bogdo_bogdomosyeonsenseo_motion/],
 ];

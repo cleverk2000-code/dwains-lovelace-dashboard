@@ -4464,14 +4464,6 @@ _entitiesByDomain(e){return f(e,{states:this._hass.states,excludedEntities:this.
               </div>
             </div>
             <div class="row-span-2 text-right space-y-0.5 info">
-              ${ddMotionEntities.length?n.qy`
-                <span class="info-badge room-motion-badge inline-flex items-center px-1 py-0.5 rounded text-xs font-medium"
-                  title=${ddMotionActive?"모션 감지":"모션 미감지"}>
-                  <ha-icon class="w-6 h-6"
-                    style=${`color: ${ddMotionActive?"#22c55e":"#808080"};`}
-                    .icon=${"mdi:motion-sensor"}></ha-icon>
-                </span><br>
-              `:""}
               ${d.Zz.map(i=>{if(!(i in t))return"";const a=this._isOn(t,i);return"light"==i||"light"!=i&&a?d.Zz.includes(i)?n.qy`
                       <span
                         class="info-badge toggle-badge inline-flex items-center px-1 py-0.5 rounded text-xs font-medium"
@@ -4491,7 +4483,7 @@ _entitiesByDomain(e){return f(e,{states:this._hass.states,excludedEntities:this.
               ${["climate","humidifier"].map(i=>{
                 const a=this._roomDomainEntities(e,i);if(!a.length)return "";
                 const o=a.some(state=>this._roomDeviceActive(state,i));
-                const l=o?(i==="climate"?"#facc15":"var(--primary-color, #38bdf8)"):"var(--secondary-text-color, #9ca3af)";
+                const l=o?(i==="climate"?"#facc15":"var(--primary-color, #38bdf8)"):"#A3A7AD";
                 const h=i==="climate"?"난방":"가습기";
                 return n.qy`<span class="info-badge room-device-badge inline-flex items-center px-1 py-0.5 rounded text-xs font-medium"
                   data-area-id=${e.area.area_id} data-domain=${i} title=${h} role="button" tabindex="0"
@@ -4528,6 +4520,14 @@ _entitiesByDomain(e){return f(e,{states:this._hass.states,excludedEntities:this.
                         ${i}
                       </span><br>
                       `:"":void 0})}
+              ${ddMotionEntities.length?n.qy`
+                <span class="info-badge room-motion-badge inline-flex items-center px-1 py-0.5 rounded text-xs font-medium"
+                  title=${ddMotionActive?"모션 감지":"모션 미감지"}>
+                  <ha-icon class="w-6 h-6"
+                    style=${`color: ${ddMotionActive?"#22c55e":"#A3A7AD"}; transform: scale(0.83); transform-origin: center;`}
+                    .icon=${"mdi:motion-sensor"}></ha-icon>
+                </span><br>
+              `:""}
             </div>
           </div>
           ${this.areaEditMode?n.qy`
