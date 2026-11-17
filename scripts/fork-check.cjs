@@ -35,7 +35,7 @@ const tests = [
   ['motion state colors', bundle, /ddMotionActive\?"#22c55e":"#A3A7AD"/],
   ['motion visual scaled inside existing 24px tile', bundle, /transform: scale\(0\.83\)/],
   ['presence badge placed after other domains', bundle, /\$\{d\.R9\.map[\s\S]*\$\{ddMotionEntities\.length\?n\.qy/],
-  ['heating off gray matches presence off', bundle, /:#A3A7AD/],
+  ['heating off gray matches presence off', bundle, /const l=o\?[\s\S]{0,140}:"#A3A7AD"/],
   ['no numeric legacy motion badge', bundle, /if\(\["motion","occupancy","presence","moving"\]\.includes\(i\)\)return""/],
   ['hallway motion entity', bundle, /binary_sensor\.bogdo_bogdomosyeonsenseo_motion/],
 ];
