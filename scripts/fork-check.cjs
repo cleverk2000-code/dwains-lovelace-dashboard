@@ -21,9 +21,9 @@ if (mode === 'stamp') {
   process.exit(2);
 }
 const tests = [
-  ['header icon bottom align source', src('dwains-house-information-card.js'), /align-items: flex-end;[\\s\\S]{0,170}padding-bottom: 7px;/],
-  ['header icon bottom align deployed', bundle, /align-items: flex-end;[\\s\\S]{0,170}padding-bottom: 7px;/],
-  ['away icon uses matching wrapper', src('dwains-house-information-card.js'), /<div class="">\\s*<ha-icon class="w-8 h-8 badge-icon" style="color: var\\(--warning-color/],
+  ['header icon bottom align source', src('dwains-house-information-card.js'), /align-items: flex-end;[\s\S]{0,170}padding-bottom: 7px;/],
+  ['header icon bottom align deployed', bundle, /align-items: flex-end;[\s\S]{0,170}padding-bottom: 7px;/],
+  ['away icon uses matching wrapper', src('dwains-house-information-card.js'), /<div class="">\s*<ha-icon class="w-8 h-8 badge-icon" style="color: var\(--warning-color/],
   ['away badge source strict on', src('dwains-house-information-card.js'), /states\?\.\['input_boolean\.away_active'\]\?\.state !== 'on'/],
   ['away badge source after persons', src('dwains-house-information-card.js'), /\$\{this\.persons\.map\([\s\S]{0,100}\}\s*\$\{this\._renderAwayStatusCard\(\)\}\s*\$\{Object\.values\(this\.domains\)/],
   ['away badge deploy strict on', bundle, /"on"===this\._hass\?\.states\?\.\["input_boolean\.away_active"\]\?\.state/],
