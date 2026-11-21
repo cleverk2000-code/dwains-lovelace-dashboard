@@ -5818,6 +5818,32 @@ _entitiesByDomain(e){return f(e,{states:this._hass.states,excludedEntities:this.
         font-size: .92rem;
         line-height: 1.25;
       }
+      /* Keep the bottom edge of people, away-mode and domain icons aligned. */
+      .dd-header-tabs .dd-header-tab .round-badge {
+        box-sizing: border-box;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        padding-bottom: 7px;
+        margin-bottom: 0 !important;
+      }
+      .dd-header-tabs .dd-header-tab .round-badge > div {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        line-height: 0;
+      }
+      .dd-header-tabs .dd-header-tab .round-badge ha-icon {
+        display: block;
+        flex: 0 0 auto;
+      }
+      .dd-header-tabs .dd-header-tab img.rounded-full {
+        display: block;
+        width: 50px;
+        height: 50px;
+        margin-bottom: 0;
+        object-fit: cover;
+      }
       @media (max-width: 600px) {
         .dd-header-tabs {
           gap: 6px;
@@ -5853,7 +5879,9 @@ _entitiesByDomain(e){return f(e,{states:this._hass.states,excludedEntities:this.
             <div class="dd-header-tab away-status-tab">
                 <div class="text-center cursor-pointer" .entity=${"input_boolean.away_active"} @click=${this._handleMoreInfo}>
                     <div class="rounded-full flex items-center justify-center m-auto round-badge" style="width: 50px; height: 50px;">
-                        <ha-icon class="w-8 h-8 badge-icon" style="color: var(--warning-color, #e1a129);" icon="mdi:airplane-takeoff"></ha-icon>
+                        <div class="">
+                            <ha-icon class="w-8 h-8 badge-icon" style="color: var(--warning-color, #e1a129);" icon="mdi:airplane-takeoff"></ha-icon>
+                        </div>
                     </div>
                     <h3>외출모드</h3>
                     <span class="text-gray-500">외출 중</span>
