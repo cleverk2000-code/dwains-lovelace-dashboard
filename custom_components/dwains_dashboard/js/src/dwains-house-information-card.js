@@ -502,6 +502,21 @@ class DwainsHouseInformationCard extends LitElement {
       `;
     }
 
+    /** Show the Home Assistant away-mode state without modifying the helper. */
+    _renderAwayStatusCard() {
+        if (this._hass?.states?.['input_boolean.away_active']?.state !== 'on') return html``;
+        return html`
+            <div class="dd-header-tab away-status-tab">
+                <div class="text-center cursor-pointer" .entity=${"input_boolean.away_active"} @click=${this._handleMoreInfo}>
+                    <div class="rounded-full flex items-center justify-center m-auto round-badge" style="width: 50px; height: 50px;">
+                        <ha-icon class="w-8 h-8 badge-icon" style="color: var(--warning-color, #e1a129);" icon="mdi:airplane-takeoff"></ha-icon>
+                    </div>
+                    <h3>외출모드</h3>
+                    <span class="text-gray-500">외출 중</span>
+                </div>
+            </div>
+        `;
+    }
     _renderPersonCard(entity_id) {
         const stateObj = this._hass.states[entity_id];
         if (stateObj && stateObj.attributes) {
@@ -551,6 +566,7 @@ class DwainsHouseInformationCard extends LitElement {
                 <ha-card>
                 <div class="dd-header-tabs">
                     ${this.persons.map((entity) => this._renderPersonCard(entity))}
+                    ${this._renderAwayStatusCard()}
                     ${Object.values(this.domains).map((domain) => this._renderDomain(domain))}
                 </div>
                 </ha-card>

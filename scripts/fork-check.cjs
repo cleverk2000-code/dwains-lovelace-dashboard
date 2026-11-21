@@ -21,6 +21,10 @@ if (mode === 'stamp') {
   process.exit(2);
 }
 const tests = [
+  ['away badge source strict on', src('dwains-house-information-card.js'), /states\?\.\['input_boolean\.away_active'\]\?\.state !== 'on'/],
+  ['away badge source after persons', src('dwains-house-information-card.js'), /\$\{this\.persons\.map\([\s\S]{0,100}\}\s*\$\{this\._renderAwayStatusCard\(\)\}\s*\$\{Object\.values\(this\.domains\)/],
+  ['away badge deploy strict on', bundle, /"on"===this\._hass\?\.states\?\.\["input_boolean\.away_active"\]\?\.state/],
+  ['away badge deploy after persons', bundle, /\$\{this\.persons\.map\([\s\S]{0,90}\}\s*\$\{this\._renderAwayStatusCard\(\)\}\s*\$\{Object\.values\(this\.domains\)/],
   ['climate setpoint source', src('entity-aggregation.js'), /const hasTarget\s*=/],
   ['climate setpoint deploy', bundle, /Number\.isFinite\(Number\(o\)\)/],
   ['heating/humidifier badges source', src('dwains-homepage-card.js'), /room-device-badge/],

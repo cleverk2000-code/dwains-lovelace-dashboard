@@ -5,6 +5,7 @@
 
 | 기능 | 포크에서 유지할 동작 | 관련 파일 |
 |---|---|---|
+| 외출모드 상단 표시 | `input_boolean.away_active`가 `on`일 때 사람 카드의 **바로 오른쪽**에 비행기 아이콘, 외출모드, 외출 중 상태 표시. `off`·`unknown`·`unavailable` 시 숨김. 클릭 시 헬퍼 상세 보기 | js/src/dwains-house-information-card.js, 배포용 JS |
 | 난방 설정온도 | climate가 heat/idle/off 상태여도 attributes.temperature가 유효하면 (23.5°C)처럼 표시 | js/src/entity-aggregation.js, 배포용 JS |
 | 난방/가습기 아이콘 | 방 카드 오른쪽의 mdi:thermostat 및 mdi:air-humidifier, 상태별 색상, 클릭 시 상세 보기 | js/src/dwains-homepage-card.js, variables.js, 배포용 JS |
 | 한글화 | 전체 한국어 번역표와 한국어 강제 적용은 배포용 JS에 포함. translations.js에는 일부 보조 번역 | **js/dwains-dashboard.js**, js/src/translations.js |
