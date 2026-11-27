@@ -46,6 +46,13 @@ const tests = [
   ['no numeric legacy motion badge', bundle, /if\(\["motion","occupancy","presence","moving"\]\.includes\(i\)\)return""/],
   ['hallway motion entity', bundle, /binary_sensor\.bogdo_bogdomosyeonsenseo_motion/],
 ];
+for (const [label, content] of [['source', src('dwains-homepage-card.js')], ['bundle', bundle]]) {
+  tests.push(
+    ['AQI numeric badge '+label, content, /room-aqi-badge[\s\S]{0,300}aria-label=\$\{\x60AQI \$\{ddAqiValue\}\x60\}>\$\{ddAqiValue\}/],
+    ['AQI directly paired with fan '+label, content, /domain === 'fan' && ddAqiValue !== null[\s\S]{0,180}room-fan-aqi-pair[^>]*>\$\{badge\}\$\{ddAqiBadge\}/],
+    ['AQI equal fan row geometry '+label, content, /\.room-fan-aqi-pair\s*\{[\s\S]{0,160}grid-auto-rows: 1fr/],
+  );
+}
 let errors = 0;
 for (const [name, content, re] of tests) {
   const ok = re.test(content);
@@ -59,5 +66,29 @@ if (actual !== revision) {
 } else console.log('OK  frontend revision ' + revision);
 try { new vm.Script(bundle); console.log('OK  bundle JavaScript syntax'); }
 catch (e) { console.error('FAIL bundle JavaScript syntax: ' + e.message); errors++; }
+for (const [label, content] of [['source', src('dwains-homepage-card.js')], ['bundle', bundle]]) {
+  try {
+    const methods = content.match(/_roomAqiValue\(ids\) \{[\s\S]*?\n    _roomAqiColor\(value\) \{[\s\S]*?\n    \}/)?.[0];
+    if (!methods) throw Error('AQI methods missing');
+    const obj = vm.runInNewContext('({' + methods.replace(/\n\s*_roomAqiColor/, ', _roomAqiColor') + '})');
+    const mk = (state, extra={}) => ({state, attributes:{device_class:'aqi',...extra}});
+    obj._hass = {states:{
+      'sensor.zero':mk('0'), 'sensor.low':mk('44'), 'sensor.high':mk('55'),
+      'sensor.invalid':mk('unknown'), 'sensor.offline':mk('unavailable'),
+      'sensor.empty':mk(' '), 'sensor.nan':mk('NaN'), 'sensor.inf':mk('Infinity'),
+      'sensor.negative':mk('-1'), 'sensor.pm':mk('200',{device_class:'pm25'}),
+      'sensor.summary':mk('300',{valid_sources:4,total_sources:4}),
+      'fan.test':mk('400')
+    }};
+    const assert = require('node:assert/strict');
+    assert.equal(obj._roomAqiValue(['sensor.zero']),0);
+    assert.equal(obj._roomAqiValue(['sensor.low','sensor.high','sensor.summary','fan.test']),55);
+    assert.equal(obj._roomAqiValue(['sensor.invalid','sensor.offline','sensor.empty','sensor.nan','sensor.inf','sensor.negative','sensor.pm','sensor.missing']),null);
+    assert.equal(obj._roomAqiValue([]),null);
+    assert.deepEqual([0,50,51,100,101,150,151,200,201,300,301,500].map(v=>obj._roomAqiColor(v)),
+      ['#22c55e','#22c55e','#facc15','#facc15','#fb923c','#fb923c','#ef4444','#ef4444','#a855f7','#a855f7','#a52a46','#a52a46']);
+    console.log('OK  AQI behavior '+label);
+  } catch(e) { console.error('FAIL AQI behavior '+label+': '+e.message); errors++; }
+}
 if (errors) { console.error(errors + ' failed checks'); process.exitCode = 1; }
 else console.log('All ' + (tests.length + 2) + ' static checks passed. Verify in Home Assistant.');

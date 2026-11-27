@@ -4429,7 +4429,31 @@ _entitiesByDomain(e){return f(e,{states:this._hass.states,excludedEntities:this.
             </div>
           </ha-card>
         </div>
-      `}_areaSensorDeviceClasses(){return R(this.configuration)}_areaBinarySensorDeviceClasses(){return I(this.configuration)}_areaBinarySensorEntities(){return B(this.configuration)}_areaBinarySensorLabel(e){return(0,h.A)(this._hass,`device.${e}`,void 0,e.replace(/_/g," "))}_translateAreaBinarySensorText(e,t={}){let i=(0,h.A)(this._hass,e,void 0,e);return Object.entries(t).forEach(([e,t])=>{i=i.replace(new RegExp(`\\{${e}\\}`,"g"),t)}),i}_isAvailableEntity(e){return e&&!d.s7.includes(e.state)}_areaBinarySensorSummary(e,t){const i=this._areaBinarySensorLabel(e);return this._translateAreaBinarySensorText(F(e,t),{count:t,label:i})}_entityBelongsToArea(e,t){return V(e,t,{entitiesById:this.entitiesById,entities:this.entities,devicesById:this.devicesById})}_areaEntityIdsForArea(e){return(this.entitiesByAreaId?.get(e)||[]).filter(e=>!e.hidden_by).filter(e=>!(this.configuration.entities[e.entity_id]&&this.configuration.entities[e.entity_id].disabled)).filter(e=>this._hass.states[e.entity_id]).map(e=>e.entity_id)}_binarySensorStateLabel(e){if(!e)return"";const t=e.attributes.device_class||"_";return this._hass.localize(`component.binary_sensor.entity_component.${t}.state.${e.state}`)||this._hass.localize(`component.binary_sensor.entity_component._.state.${e.state}`)||e.state}_areaBinarySensorValues(e){const t=e.area_id;return H({areaId:t,areaEntityIds:this._areaEntityIdsForArea(t),states:this._hass.states,deviceClasses:this._areaBinarySensorDeviceClasses(),explicitEntityIds:this._areaBinarySensorEntities(),unavailableStates:d.s7,offStates:d.jj,belongsToArea:(e,t)=>this._entityBelongsToArea(e,t),summary:(e,t)=>this._areaBinarySensorSummary(e,t),displayName:e=>this._entityDisplayName(e),stateLabel:e=>this._binarySensorStateLabel(e)})}_renderAreaButton(e){const t=this._entitiesByDomain(e.entities),i=[];d.Xt.forEach(e=>{e in t&&this._areaSensorDeviceClasses().forEach(a=>{if(t[e].some(e=>e.attributes.device_class===a)){const r=this._average(t,e,a);r&&i.push(r)}})}),i.push(...this._areaBinarySensorValues(e.area));const ddMotionIds=new Set([...(this.entitiesByAreaId?.get(e.area.area_id)||[]).map(entry=>entry.entity_id),...(e.entities||[])]),ddMotionEntities=[...ddMotionIds].map(id=>this._hass.states[id]).filter(entity=>entity?.entity_id?.startsWith("binary_sensor.")&&(["motion","occupancy","presence","moving"].includes(entity.attributes?.device_class)||/(motion|occupancy|presence|jaesil|dongche)/i.test(entity.entity_id))),ddIsHallway=e.area.name?.trim()==="복도"||e.area.area_id==="bogdo",ddHallMotion=this._hass.states["binary_sensor.bogdo_bogdomosyeonsenseo_motion"];ddIsHallway&&ddHallMotion&&!ddMotionEntities.some(entity=>entity.entity_id===ddHallMotion.entity_id)&&ddMotionEntities.push(ddHallMotion);const ddMotionActive=ddMotionEntities.some(entity=>entity.state==="on");const a=this.configuration.areas?this.configuration.areas[e.area.area_id]:void 0,r=a&&a.hide_icon?"":a&&a.icon||e.area.icon||"mdi:texture-box";return n.qy`
+      `}_areaSensorDeviceClasses(){return R(this.configuration)}_areaBinarySensorDeviceClasses(){return I(this.configuration)}_areaBinarySensorEntities(){return B(this.configuration)}_areaBinarySensorLabel(e){return(0,h.A)(this._hass,`device.${e}`,void 0,e.replace(/_/g," "))}_translateAreaBinarySensorText(e,t={}){let i=(0,h.A)(this._hass,e,void 0,e);return Object.entries(t).forEach(([e,t])=>{i=i.replace(new RegExp(`\\{${e}\\}`,"g"),t)}),i}_isAvailableEntity(e){return e&&!d.s7.includes(e.state)}_areaBinarySensorSummary(e,t){const i=this._areaBinarySensorLabel(e);return this._translateAreaBinarySensorText(F(e,t),{count:t,label:i})}_entityBelongsToArea(e,t){return V(e,t,{entitiesById:this.entitiesById,entities:this.entities,devicesById:this.devicesById})}_areaEntityIdsForArea(e){return(this.entitiesByAreaId?.get(e)||[]).filter(e=>!e.hidden_by).filter(e=>!(this.configuration.entities[e.entity_id]&&this.configuration.entities[e.entity_id].disabled)).filter(e=>this._hass.states[e.entity_id]).map(e=>e.entity_id)}_binarySensorStateLabel(e){if(!e)return"";const t=e.attributes.device_class||"_";return this._hass.localize(`component.binary_sensor.entity_component.${t}.state.${e.state}`)||this._hass.localize(`component.binary_sensor.entity_component._.state.${e.state}`)||e.state}_areaBinarySensorValues(e){const t=e.area_id;return H({areaId:t,areaEntityIds:this._areaEntityIdsForArea(t),states:this._hass.states,deviceClasses:this._areaBinarySensorDeviceClasses(),explicitEntityIds:this._areaBinarySensorEntities(),unavailableStates:d.s7,offStates:d.jj,belongsToArea:(e,t)=>this._entityBelongsToArea(e,t),summary:(e,t)=>this._areaBinarySensorSummary(e,t),displayName:e=>this._entityDisplayName(e),stateLabel:e=>this._binarySensorStateLabel(e)})}_roomAqiValue(ids) {
+      const values = [];
+      for (const id of ids) {
+        const entity = this._hass.states[id];
+        if (!id.startsWith('sensor.') || entity?.attributes?.device_class !== 'aqi'
+          || entity.attributes.valid_sources !== undefined || entity.attributes.total_sources !== undefined
+          || typeof entity.state !== 'string' || entity.state.trim() === '') continue;
+        const value = Number(entity.state);
+        if (Number.isFinite(value) && value >= 0) values.push(Math.round(value));
+      }
+      return values.length ? Math.max(...values) : null;
+    }
+
+    _roomAqiColor(value) {
+      return value <= 50 ? '#22c55e' : value <= 100 ? '#facc15'
+        : value <= 150 ? '#fb923c' : value <= 200 ? '#ef4444'
+        : value <= 300 ? '#a855f7' : '#a52a46';
+    }
+
+    _renderAreaButton(e){const t=this._entitiesByDomain(e.entities),i=[];d.Xt.forEach(e=>{e in t&&this._areaSensorDeviceClasses().forEach(a=>{if(t[e].some(e=>e.attributes.device_class===a)){const r=this._average(t,e,a);r&&i.push(r)}})}),i.push(...this._areaBinarySensorValues(e.area));const ddMotionIds=new Set([...(this.entitiesByAreaId?.get(e.area.area_id)||[]).map(entry=>entry.entity_id),...(e.entities||[])]),ddMotionEntities=[...ddMotionIds].map(id=>this._hass.states[id]).filter(entity=>entity?.entity_id?.startsWith("binary_sensor.")&&(["motion","occupancy","presence","moving"].includes(entity.attributes?.device_class)||/(motion|occupancy|presence|jaesil|dongche)/i.test(entity.entity_id))),ddIsHallway=e.area.name?.trim()==="복도"||e.area.area_id==="bogdo",ddHallMotion=this._hass.states["binary_sensor.bogdo_bogdomosyeonsenseo_motion"];ddIsHallway&&ddHallMotion&&!ddMotionEntities.some(entity=>entity.entity_id===ddHallMotion.entity_id)&&ddMotionEntities.push(ddHallMotion);const ddMotionActive=ddMotionEntities.some(entity=>entity.state==="on");const ddAqiValue = this._roomAqiValue(ddMotionIds);
+      const ddAqiBadge = ddAqiValue === null ? '' : n.qy`
+        <span class="info-badge room-aqi-badge inline-flex items-center px-1 py-0.5 rounded text-xs font-medium"
+          style=${`color: ${this._roomAqiColor(ddAqiValue)};`}
+          title=${`AQI ${ddAqiValue}`} aria-label=${`AQI ${ddAqiValue}`}>${ddAqiValue}</span>`;
+      const a=this.configuration.areas?this.configuration.areas[e.area.area_id]:void 0,r=a&&a.hide_icon?"":a&&a.icon||e.area.icon||"mdi:texture-box";return n.qy`
         <div class="relative" data-area-id='${e.area.area_id}'>
           <div
             class="flex justify-between h-44 p-3 area-button ${this.selectedArea!=e.area.area_id||this.configuration.homepage_header.v2_mode?"":"current"}"
@@ -4463,23 +4487,28 @@ _entitiesByDomain(e){return f(e,{states:this._hass.states,excludedEntities:this.
                 <span class="text-gray text-sm capitalize">${this._climateState(t,"climate")}</span>
               </div>
             </div>
-            <div class="row-span-2 text-right space-y-0.5 info">
-              ${d.Zz.map(i=>{if(!(i in t))return"";const a=this._isOn(t,i);return"light"==i||"light"!=i&&a?d.Zz.includes(i)?n.qy`
-                      <span
-                        class="info-badge toggle-badge inline-flex items-center px-1 py-0.5 rounded text-xs font-medium"
-                        .domain=${i}
-                        .area_id=${e.area.area_id}
-                        .state=${a}
-                        @click=${this._toggle}
-                      >
-                        <ha-icon
-                          class="${a?"on":"off"} w-6 h-6 mr-0.5"
-                          .icon=${d.qJ[i][a?"on":"off"]}
-                        >
-                        </ha-icon>
-                        ${a}
-                      </span><br>
-                      `:"":void 0})}
+            <div class="row-span-2 text-right space-y-0.5 info ${ddAqiValue !== null ? 'room-aqi-info' : ''}">
+              ${d.Zz.map((domain) => {
+                const on = domain in t ? this._isOn(t, domain) : 0;
+                const visible = domain in t && (domain === 'light' || on);
+                const badge = visible ? n.qy`
+                  <span
+                    class="info-badge toggle-badge inline-flex items-center px-1 py-0.5 rounded text-xs font-medium"
+                    .domain=${domain}
+                    .area_id=${e.area.area_id}
+                    .state=${on}
+                    @click=${this._toggle}
+                  >
+                    <ha-icon class="${on ? 'on' : 'off'} w-6 h-6 mr-0.5"
+                      .icon=${d.qJ[domain][on ? 'on' : 'off']}></ha-icon>
+                    ${on}
+                  </span>` : '';
+                if (domain === 'fan' && ddAqiValue !== null) {
+                  return visible ? n.qy`<div class="room-fan-aqi-pair">${badge}${ddAqiBadge}</div><br>`
+                    : n.qy`${ddAqiBadge}<br>`;
+                }
+                return visible ? n.qy`${badge}<br>` : '';
+              })}
               ${["climate","humidifier"].map(i=>{
                 const a=this._roomDomainEntities(e,i);if(!a.length)return "";
                 const o=a.some(state=>this._roomDeviceActive(state,i));
@@ -5263,6 +5292,29 @@ _entitiesByDomain(e){return f(e,{states:this._hass.states,excludedEntities:this.
           gap: 0 0.125rem;
           overflow: hidden;
           pointer-events: none;
+        }
+        .area-button .info.room-aqi-info {
+          bottom: 0.75rem;
+          max-height: calc(100% - 1.5rem);
+        }
+        .room-fan-aqi-pair {
+          display: inline-grid;
+          grid-template-columns: max-content;
+          grid-auto-rows: 1fr;
+          align-items: stretch;
+          flex: none;
+          gap: 0;
+        }
+        .room-fan-aqi-pair > .info-badge {
+          width: 100%;
+        }
+        .area-button .info .room-aqi-badge {
+          justify-content: center;
+          min-width: 2.5rem;
+          min-height: 1.75rem;
+          font-variant-numeric: tabular-nums;
+          font-weight: 700;
+          flex-shrink: 0;
         }
         .area-button .info br {
           display: none;

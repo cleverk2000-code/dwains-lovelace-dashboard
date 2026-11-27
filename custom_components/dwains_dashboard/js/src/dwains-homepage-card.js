@@ -1737,6 +1737,25 @@ function getDwainsHass() {
       });
     }
 
+    _roomAqiValue(ids) {
+      const values = [];
+      for (const id of ids) {
+        const entity = this._hass.states[id];
+        if (!id.startsWith('sensor.') || entity?.attributes?.device_class !== 'aqi'
+          || entity.attributes.valid_sources !== undefined || entity.attributes.total_sources !== undefined
+          || typeof entity.state !== 'string' || entity.state.trim() === '') continue;
+        const value = Number(entity.state);
+        if (Number.isFinite(value) && value >= 0) values.push(Math.round(value));
+      }
+      return values.length ? Math.max(...values) : null;
+    }
+
+    _roomAqiColor(value) {
+      return value <= 50 ? '#22c55e' : value <= 100 ? '#facc15'
+        : value <= 150 ? '#fb923c' : value <= 200 ? '#ef4444'
+        : value <= 300 ? '#a855f7' : '#a52a46';
+    }
+
     _renderAreaButton(data){
       const entitiesByDomain = this._entitiesByDomain(
         data.entities
@@ -1785,6 +1804,11 @@ function getDwainsHass() {
       }
       const ddMotionActive = ddMotionEntities.some((entity) => entity.state === 'on');
 
+      const ddAqiValue = this._roomAqiValue(ddMotionIds);
+      const ddAqiBadge = ddAqiValue === null ? '' : html`
+        <span class="info-badge room-aqi-badge inline-flex items-center px-1 py-0.5 rounded text-xs font-medium"
+          style=${`color: ${this._roomAqiColor(ddAqiValue)};`}
+          title=${`AQI ${ddAqiValue}`} aria-label=${`AQI ${ddAqiValue}`}>${ddAqiValue}</span>`;
       const configuredArea = this.configuration['areas']
         ? this.configuration['areas'][data.area.area_id]
         : undefined;
@@ -1830,32 +1854,27 @@ function getDwainsHass() {
                 <span class="text-gray text-sm capitalize">${this._climateState(entitiesByDomain, 'climate')}</span>
               </div>
             </div>
-            <div class="row-span-2 text-right space-y-0.5 info">
+            <div class="row-span-2 text-right space-y-0.5 info ${ddAqiValue !== null ? 'room-aqi-info' : ''}">
               ${TOGGLE_DOMAINS.map((domain) => {
-                if (!(domain in entitiesByDomain)) {
-                  return "";
+                const on = domain in entitiesByDomain ? this._isOn(entitiesByDomain, domain) : 0;
+                const visible = domain in entitiesByDomain && (domain === 'light' || on);
+                const badge = visible ? html`
+                  <span
+                    class="info-badge toggle-badge inline-flex items-center px-1 py-0.5 rounded text-xs font-medium"
+                    .domain=${domain}
+                    .area_id=${data.area.area_id}
+                    .state=${on}
+                    @click=${this._toggle}
+                  >
+                    <ha-icon class="${on ? 'on' : 'off'} w-6 h-6 mr-0.5"
+                      .icon=${DOMAIN_STATE_ICONS[domain][on ? 'on' : 'off']}></ha-icon>
+                    ${on}
+                  </span>` : '';
+                if (domain === 'fan' && ddAqiValue !== null) {
+                  return visible ? html`<div class="room-fan-aqi-pair">${badge}${ddAqiBadge}</div><br>`
+                    : html`${ddAqiBadge}<br>`;
                 }
-                const on = this._isOn(entitiesByDomain, domain);
-                if(domain == 'light' || domain != 'light' && on){
-                  return TOGGLE_DOMAINS.includes(domain)
-                    ? html`
-                      <span
-                        class="info-badge toggle-badge inline-flex items-center px-1 py-0.5 rounded text-xs font-medium"
-                        .domain=${domain}
-                        .area_id=${data.area.area_id}
-                        .state=${on}
-                        @click=${this._toggle}
-                      >
-                        <ha-icon
-                          class="${on ? 'on' : 'off'} w-6 h-6 mr-0.5"
-                          .icon=${DOMAIN_STATE_ICONS[domain][on ? "on" : "off"]}
-                        >
-                        </ha-icon>
-                        ${on}
-                      </span><br>
-                      `
-                    : "";
-                }
+                return visible ? html`${badge}<br>` : '';
               })}
               ${['climate', 'humidifier'].map((domain) => {
                 const entities = entitiesByDomain[domain];
@@ -2927,6 +2946,29 @@ function getDwainsHass() {
           gap: 0 0.125rem;
           overflow: hidden;
           pointer-events: none;
+        }
+        .area-button .info.room-aqi-info {
+          bottom: 0.75rem;
+          max-height: calc(100% - 1.5rem);
+        }
+        .room-fan-aqi-pair {
+          display: inline-grid;
+          grid-template-columns: max-content;
+          grid-auto-rows: 1fr;
+          align-items: stretch;
+          flex: none;
+          gap: 0;
+        }
+        .room-fan-aqi-pair > .info-badge {
+          width: 100%;
+        }
+        .area-button .info .room-aqi-badge {
+          justify-content: center;
+          min-width: 2.5rem;
+          min-height: 1.75rem;
+          font-variant-numeric: tabular-nums;
+          font-weight: 700;
+          flex-shrink: 0;
         }
         .area-button .info br {
           display: none;
